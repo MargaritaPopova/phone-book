@@ -35,7 +35,7 @@ python app.py
 Usage
 ---
 Go to http://0.0.0.0:5000/ for browsable API
-![](static/ezgif-4-c0a3c98fa933.gif)
+![](static/ezgif-4-3392c17ed96d.gif)
 
 ### Making requests
 
