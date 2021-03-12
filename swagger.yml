@@ -1,0 +1,139 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger ReST Article
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+# Paths supported by the server application
+paths:
+  /phones:
+    get:
+      operationId: phones.read_all
+      tags:
+        - Phones
+      summary: Read the entire list of phones
+      description: Read the list of phones
+      parameters:
+        - name: length
+          in: query
+          type: integer
+          description: Number of phones to get from phones
+          required: false
+        - name: offset
+          in: query
+          type: integer
+          description: Offset from beginning of list where to start gathering phones
+          required: false
+      responses:
+        200:
+          description: Successfully read phones list operation
+          schema:
+            type: array
+            items:
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                number:
+                  type: string
+
+    post:
+      operationId: phones.create
+      tags:
+        - Phones
+      summary: Create a phone and add it to the phones list
+      description: Create a new phone in the phones list
+      parameters:
+        - name: phone
+          in: body
+          description: phone to create
+          required: True
+          schema:
+            type: object
+            properties:
+              first_name:
+                type: string
+                description: First name of phone's owner to create
+              last_name:
+                type: string
+                description: Last name of phone's owner to create
+              number:
+                type: string
+                description: phone number
+      responses:
+        201:
+          description: Successfully created phone in list
+
+  /phones/{number}:
+    get:
+      operationId: phones.read_one
+      tags:
+        - Phones
+      summary: Read one phone from the phones list
+      description: Read one phone from the phones list
+      parameters:
+        - name: number
+          in: path
+          description: number of the phone to get from the list
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully read phone from phones list operation
+          schema:
+            properties:
+              first_name:
+                type: string
+              last_name:
+                type: string
+              number:
+                type: string
+
+    put:
+      operationId: phones.update
+      tags:
+        - Phones
+      summary: Update a phone in the phones list
+      description: Update a phone in the phones list
+      parameters:
+        - name: number
+          in: path
+          description: number of the phone to update in the list
+          type: string
+          required: True
+        - name: phone
+          in: body
+          schema:
+            type: object
+            properties:
+              first_name:
+                type: string
+              last_name:
+                type: string
+              number:
+                type: string
+      responses:
+        200:
+          description: Successfully updated phone in phones list
+
+    delete:
+      operationId: phones.delete
+      tags:
+        - Phones
+      summary: Delete a phone from the phones list
+      description: Delete a phone
+      parameters:
+        - name: number
+          in: path
+          type: string
+          required: True
+      responses:
+        200:
+          description: Successfully deleted a phone from phones list
