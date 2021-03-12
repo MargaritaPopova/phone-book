@@ -1,6 +1,8 @@
-## Flask API CRUD Phone book
+Flask API CRUD Phone book
+-----
 
-### Installation
+Installation
+--
 
 Clone the repository into a new folder and switch to project root :   
 ```
@@ -30,17 +32,21 @@ run app:
 python app.py
 ```
 
-### Usage
+Usage
+---
 Go to http://0.0.0.0:5000/ for browsable API 
 
-#### Making requests
+### Making requests
+
 
 URL: http://0.0.0.0:5000/api/phones  
+
 
 ```GET``` request to get list of phones   
 ```POST``` request with json data to create new phone number
 
-URL: http://0.0.0.0:5000/api/phones/\<int:phone_id>  
+URL: http://0.0.0.0:5000/api/phones/<int:phone_id>  
+
 
 ```GET``` request to get one number  
 ```PUT``` request with json data to update a number  
