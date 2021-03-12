@@ -24,18 +24,14 @@ ns.model = (function() {
                 $event_pump.trigger('model_error', [xhr, textStatus, errorThrown]);
             })
         },
-        create: function(first_name, last_name, number) {
+        create: function(phone) {
             let ajax_options = {
                 type: 'POST',
                 url: 'api/phones',
                 accepts: 'application/json',
                 contentType: 'application/json',
-                dataType: 'text',
-                data: JSON.stringify({
-                    'first_name': first_name,
-                    'last_name': last_name,
-                    'number': number
-                })
+                dataType: 'json',
+                data: JSON.stringify(phone)
             };
             $.ajax(ajax_options)
             .done(function(data) {
@@ -45,17 +41,14 @@ ns.model = (function() {
                 $event_pump.trigger('model_error', [xhr, textStatus, errorThrown]);
             })
         },
-        update: function(first_name, last_name, number) {
+        update: function(phone) {
             let ajax_options = {
                 type: 'PUT',
-                url: 'api/phones/' + number,
+                url: `api/phones/${phone.phone_id}`,
                 accepts: 'application/json',
                 contentType: 'application/json',
                 dataType: 'text',
-                data: JSON.stringify({
-                    'first_name': first_name,
-                    'last_name': last_name
-                })
+                data: JSON.stringify(phone)
             };
             $.ajax(ajax_options)
             .done(function(data) {
@@ -67,10 +60,10 @@ ns.model = (function() {
                 console.log('update failed');
             })
         },
-        'delete': function(number) {
+        'delete': function(phone_id) {
             let ajax_options = {
                 type: 'DELETE',
-                url: 'api/phones/' + number,
+                url: `api/phones/${phone_id}`,
                 accepts: 'application/json',
                 contentType: 'plain/text'
             };
@@ -89,21 +82,24 @@ ns.model = (function() {
 ns.view = (function() {
     'use strict';
 
-    let $first_name = $('#first_name'),
+    let $phone_id = $('#phone_id'),
+        $first_name = $('#first_name'),
         $last_name = $('#last_name'),
         $number = $('#number');
 
     // return the API
     return {
         reset: function() {
+            $phone_id.val('')
             $first_name.val('').focus();
             $last_name.val('');
             $number.val('');
         },
-        update_editor: function(first_name, last_name, number) {
-            $first_name.val(first_name).focus();
-            $last_name.val(last_name);
-            $number.val(number);
+        update_editor: function(phone) {
+            $phone_id.val(phone.phone_id);
+            $first_name.val(phone.first_name).focus();
+            $last_name.val(phone.last_name);
+            $number.val(phone.number);
         },
         build_table: function(phones) {
             let rows = ''
@@ -114,7 +110,10 @@ ns.view = (function() {
             // did we get a phones array?
             if (phones) {
                 for (let i=0, l=phones.length; i < l; i++) {
-                    rows += `<tr><td class="first_name">${phones[i].first_name}</td><td class="last_name">${phones[i].last_name}</td><td class="number">${phones[i].number}</td></tr>`;
+                    rows += `<tr data-phone-id="${phones[i].phone_id}">
+                    <td class="first_name">${phones[i].first_name}</td>
+                    <td class="last_name">${phones[i].last_name}</td>
+                    <td class="number">${phones[i].number}</td></tr>`;
                 }
                 $('table > tbody').append(rows);
             }
@@ -137,6 +136,7 @@ ns.controller = (function(m, v) {
     let model = m,
         view = v,
         $event_pump = $('body'),
+        $phone_id = $('#phone_id'),
         $first_name = $('#first_name'),
         $last_name = $('#last_name'),
         $number = $('#number');
@@ -160,21 +160,30 @@ ns.controller = (function(m, v) {
         e.preventDefault();
 
         if (validate(first_name, last_name, number)) {
-            model.create(first_name, last_name, number)
+            model.create({
+                first_name: first_name,
+                last_name: last_name,
+                number: number
+            })
         } else {
             alert('Problem with name or number input');
         }
     });
 
     $('#update').click(function(e) {
-        let first_name = $first_name.val(),
+        let phone_id = $phone_id.val(),
+            first_name = $first_name.val(),
             last_name = $last_name.val(),
             number = $number.val();
 
         e.preventDefault();
 
-        if (validate(first_name, last_name, number)) {
-            model.update(first_name, last_name, number)
+        if (validate(first_name, last_name)) {
+            model.update({
+                phone_id: phone_id,
+                first_name: first_name,
+                last_name: last_name,
+            })
         } else {
             alert('Problem with name or number input');
         }
@@ -182,12 +191,12 @@ ns.controller = (function(m, v) {
     });
 
     $('#delete').click(function(e) {
-        let number = $number.val();
+        let phone_id = $phone_id.val();
 
         e.preventDefault();
 
-        if (validate('placeholder', number)) {
-            model.delete(number)
+        if (validate('placeholder', phone_id)) {
+            model.delete(phone_id)
         } else {
             alert('Problem with number input');
         }
@@ -200,9 +209,14 @@ ns.controller = (function(m, v) {
 
     $('table > tbody').on('dblclick', 'tr', function(e) {
         let $target = $(e.target),
+            phone_id,
             first_name,
             last_name,
             number;
+
+        phone_id = $target
+            .parent()
+            .attr('data-phone-id');
 
         first_name = $target
             .parent()
@@ -219,7 +233,12 @@ ns.controller = (function(m, v) {
             .find('td.number')
             .text();
 
-        view.update_editor(first_name, last_name, number);
+        view.update_editor({
+            phone_id: phone_id,
+            first_name: first_name,
+            last_name: last_name,
+            number: number
+        });
     });
 
     // Handle the model events
