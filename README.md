@@ -14,10 +14,15 @@ run python build_database.py
 
 run python app.py
 
-go to http://0.0.0.0:5000/ for browsable API or make requests
+go to http://0.0.0.0:5000/ for browsable API 
 
-http://0.0.0.0:5000/api/phones - to get list or create new
-http://0.0.0.0:5000/api/phones/3 - to get one phone
+or make requests to:
+
+http://0.0.0.0:5000/api/phones - to get list of phones or create new phone number
+http://0.0.0.0:5000/api/phones/<int:pk> - to get or update individual phone
+
+exapmle:
+
 
 
 

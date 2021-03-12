@@ -28,7 +28,7 @@ def read_one(phone_id):
     if phone is not None:
         # serialize the data
         phone_schema = PhoneSchema()
-        return phone_schema.dump(phone).data
+        return phone_schema.dump(phone)
     else:
         abort(404, 'Phone not found for Id: {}'.format(phone_id))
 
